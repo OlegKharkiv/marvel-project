@@ -61,22 +61,22 @@ class CharList extends Component {
         }) 
     }
 
-    myLiRef = [];
+    // myLiRef = [];
 
-    setmyLiRef = (ref) => {
-        this.myLiRef.push(ref);
-        };
+    // setmyLiRef = (ref) => {
+    //     this.myLiRef.push(ref);
+    //     };
 
-    focusLI = (id) => {
-        this.myLiRef.forEach(item => item.classList.remove('char__item_selected'));
-        this.myLiRef[id].classList.add('char__item_selected');
-        this.myLiRef[id].focus();
-    }
+    // focusLI = (id) => {
+    //     this.myLiRef.forEach(item => item.classList.remove('char__item_selected'));
+    //     this.myLiRef[id].classList.add('char__item_selected');
+    //     this.myLiRef[id].focus();
+    // }
 
     renderItems(arr) {
         const items =  arr.map((item, index) => {
             const styleThumbnail = (item.thumbnail === ('http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg')) ? {objectFit: 'contain'} : {objectFit: 'cover'};
-            // let ID = "char__item" + index;
+            let ID = "char__item" + index;
             // if (this.setInputRef) {
             //     classNames += '_selected';
             // }
@@ -85,10 +85,13 @@ class CharList extends Component {
             return (
                 <li 
                     ref={this.setmyLiRef}
-                    className="char__item"
+                    className={[this.state.FocusedItem === ID? "char__item char__item_selected" : "char__item"]}
+
+                    onMouseEnter={()=>this.setState({FocusedItem: ID})}
+                    onMouseLeave={()=>this.setState({FocusedItem: ""})}
                     onClick={() => {
                         this.props.onCharSelected(item.id);
-                        this.focusLI(index);
+                        // this.focusLI(index);
                     }}
                     tabIndex={0}
                     key={item.id}
