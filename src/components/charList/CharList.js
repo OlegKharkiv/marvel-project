@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import MarvelService from '../../services/MarvelService';
@@ -8,75 +8,63 @@ import ErrorMessage from '../errorMessage/ErrorMessage';
 import './charList.scss';
 
 
-class CharList extends Component {
+const CharList = (props) => {
     
-    state = {
-        charList: [],
-        loading: true,
-        error: false,
-        newItemLoading: false,
-        offset: 210,
-        charEnded: false
+    const [charList, setCharList] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
+    const [newItemLoading, setNewItemLoading] = useState(false);
+    const [offset, setOffset] = useState(210);
+    const [charEnded, setCharEnded] = useState(false);
+
+    const marvelService = new MarvelService();
+
+    useEffect(() => {
+        onRequest();
+    }, [])
+    
+    const onRequest = (offset) => {
+        onCharListLoading();
+        marvelService.getAllCharacters(offset)
+            .then(onCharListLoaded)
+            .catch(onError)
     }
 
-    marvelService = new MarvelService();
-
-    componentDidMount() {
-        this.onRequest();
-    }
-
-    onRequest = (offset) => {
-        this.onCharListLoading();
-        this.marvelService.getAllCharacters(offset)
-            .then(this.onCharListLoaded)
-            .catch(this.onError)
-    }
-
-    onCharListLoading = () => {
-        this.setState({
-            newItemLoading: true
-        })
+    const onCharListLoading = () => {
+        setNewItemLoading(true);
     } 
 
-    onCharListLoaded = (newCharList) => {
+    const onCharListLoaded = (newCharList) => {
         let ended = false;
         if (newCharList.length < 9) {
             ended = true;
         }
 
-
-        this.setState(({offset, charList}) => ({
-            charList: [...charList, ...newCharList], 
-            loading: false,
-            newItemLoading: false,
-            offset: offset + 9,
-            charEnded: ended
-        }))
+        setCharList(charList => [...charList, ...newCharList]);
+        setLoading(loading => false);
+        setNewItemLoading(newItemLoading => false);
+        setOffset(offset => offset + 9);
+        setCharEnded(charEnded => ended);
     }
 
-    onError = () => {
-        this.setState({
-            loading: false,
-            error: true
-        }) 
+    const onError = () => {
+        setLoading(loading => false);
+        setError(true); 
     }
 
-    // myLiRef = [];
+    const myLiRef = useRef([]);
 
-    // setmyLiRef = (ref) => {
-    //     this.myLiRef.push(ref);
-    //     };
+    const focusLI = (id) => {
+        myLiRef.current.forEach(item => item.classList.remove('char__item_selected'));
+        myLiRef.current[id].classList.add('char__item_selected');
+        myLiRef.current[id].focus();
+    }
 
-    // focusLI = (id) => {
-    //     this.myLiRef.forEach(item => item.classList.remove('char__item_selected'));
-    //     this.myLiRef[id].classList.add('char__item_selected');
-    //     this.myLiRef[id].focus();
-    // }
-
-    renderItems(arr) {
+    function renderItems(arr) {
         const items =  arr.map((item, index) => {
             const styleThumbnail = (item.thumbnail === ('http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg')) ? {objectFit: 'contain'} : {objectFit: 'cover'};
-            let ID = "char__item" + index;
+            // let ID = "char__item" + index;
+            // let FocusedItem = '';
             // if (this.setInputRef) {
             //     classNames += '_selected';
             // }
@@ -84,21 +72,21 @@ class CharList extends Component {
             
             return (
                 <li 
-                    ref={this.setmyLiRef}
-                    className={[this.state.FocusedItem === ID? "char__item char__item_selected" : "char__item"]}
-
-                    onMouseEnter={()=>this.setState({FocusedItem: ID})}
-                    onMouseLeave={()=>this.setState({FocusedItem: ""})}
+                    ref={el => myLiRef.current[index] = el}
+                    // className={FocusedItem === ID? "char__item char__item_selected" : "char__item"}
+                    className={'char__item'}
+                    // onMouseEnter={() => (FocusedItem = ID)}
+                    // onMouseLeave={() => (FocusedItem = "")}
                     onClick={() => {
-                        this.props.onCharSelected(item.id);
-                        // this.focusLI(index);
+                        props.onCharSelected(item.id);
+                        focusLI(index);
                     }}
                     tabIndex={0}
                     key={item.id}
                     onKeyPress={(e) => {
                         if (e.key === ' ' || e.key === "Enter") {
-                            this.props.onCharSelected(item.id);
-                            this.focusLI(index);
+                            props.onCharSelected(item.id);
+                            focusLI(index);
                         }
                     }}>
                         <img src={item.thumbnail} alt={item.name} style={styleThumbnail}/>
@@ -113,12 +101,8 @@ class CharList extends Component {
             </ul>
         )
     }
-
-    render() {
-
-        const {charList, loading, error, newItemLoading, offset, charEnded} = this.state;
         
-        const items = this.renderItems(charList);
+        const items = renderItems(charList);
 
         const errorMessage = error ? <ErrorMessage/> : null;
         const spinner = loading ? <Spinner/> : null;
@@ -133,13 +117,12 @@ class CharList extends Component {
                     className="button button__main button__long"
                     disabled={newItemLoading}
                     style={{'display': charEnded ? 'none' : 'block'}}
-                    onClick={() => this.onRequest(offset)}
+                    onClick={() => onRequest(offset)}
                     >
                     <div className="inner">load more</div>
                 </button>
             </div>
         )
-    }
 
 }
 
