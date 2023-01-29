@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
+
+import { Link } from 'react-router-dom';
 
 import useMarvelServiceComics from '../../services/MarvelServiceComics';
 import Spinner from '../spinner/Spinner';
@@ -10,7 +11,7 @@ import './comicsList.scss';
 const ComicsList = (props) => {
     const [comicList, setComicList] = useState([]);
     const [newItemLoading, setNewItemLoading] = useState(false);
-    const [offset, setOffset] = useState(210);
+    const [offset, setOffset] = useState(0);
     const [comicEnded, setComicEnded] = useState(false);
 
     const {loading, error, getAllComics} = useMarvelServiceComics();
@@ -39,17 +40,16 @@ const ComicsList = (props) => {
 
     function renderItems(arr) {
         const items =  arr.map((item, index) => {
-            // const styleThumbnail = (item.thumbnail === ('http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg')) ? {objectFit: 'contain'} : {objectFit: 'cover'};
             
             return (
                 <li className="comics__item"
                     tabIndex={index}
                     key={index}>
-                    <a href={item.homepage}>
+                    <Link to={`/comics/${item.id}`}>
                         <img src={item.thumbnail} alt={item.title} className="comics__item-img"/>
                         <div className="comics__item-name">{item.title}</div>
                         <div className="comics__item-price">{item.price}</div>
-                    </a>
+                    </Link>
                 </li>
             )
         });
@@ -81,9 +81,9 @@ const ComicsList = (props) => {
             </div>
         )
 
-    ComicsList.propTypes = {
-        onComicsSelected: PropTypes.func.isRequired
-    }
+    // ComicsList.propTypes = {
+    //     onComicsSelected: PropTypes.func.isRequired
+    // }
 }
 
 export default ComicsList; 

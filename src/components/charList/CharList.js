@@ -70,7 +70,7 @@ const CharList = (props) => {
                         focusLI(index);
                     }}
                     tabIndex={0}
-                    key={item.id}
+                    key={index}
                     onKeyPress={(e) => {
                         if (e.key === ' ' || e.key === "Enter") {
                             props.onCharSelected(item.id);
