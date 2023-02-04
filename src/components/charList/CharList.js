@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
@@ -14,6 +15,7 @@ const CharList = (props) => {
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
+    const [inProp, setInProp] = useState(false);
 
     const {loading, error, getAllCharacters} = useMarvelService();
 
@@ -41,6 +43,7 @@ const CharList = (props) => {
 
     
     const myLiRef = useRef([]);
+    const nodeRef = useRef(null);
 
     const focusLI = (id) => {
         myLiRef.current.forEach(item => item.classList.remove('char__item_selected'));
@@ -48,45 +51,43 @@ const CharList = (props) => {
         myLiRef.current[id].focus();
     }
 
+
+
     function renderItems(arr) {
         const items =  arr.map((item, index) => {
             const styleThumbnail = (item.thumbnail === ('http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg')) ? {objectFit: 'contain'} : {objectFit: 'cover'};
-            // let ID = "char__item" + index;
-            // let FocusedItem = '';
-            // if (this.setInputRef) {
-            //     classNames += '_selected';
-            // }
             
             
             return (
-                <li 
-                    ref={el => myLiRef.current[index] = el}
-                    // className={FocusedItem === ID? "char__item char__item_selected" : "char__item"}
-                    className={'char__item'}
-                    // onMouseEnter={() => (FocusedItem = ID)}
-                    // onMouseLeave={() => (FocusedItem = "")}
-                    onClick={() => {
-                        props.onCharSelected(item.id);
-                        focusLI(index);
-                    }}
-                    tabIndex={0}
-                    key={index}
-                    onKeyPress={(e) => {
-                        if (e.key === ' ' || e.key === "Enter") {
-                            props.onCharSelected(item.id);
-                            focusLI(index);
-                        }
-                    }}>
-                        <img src={item.thumbnail} alt={item.name} style={styleThumbnail}/>
-                        <div className="char__name">{item.name}</div>
-                </li>
+                    <CSSTransition key={item.id} timeout={600} classNames='char__item'>
+                        <li 
+                            ref={el => myLiRef.current[index] = el}
+                            className={'char__item'}
+                            onClick={() => {
+                                props.onCharSelected(item.id);
+                                focusLI(index);
+                            }}
+                            tabIndex={0}
+                            key={index}
+                            onKeyPress={(e) => {
+                                if (e.key === ' ' || e.key === "Enter") {
+                                    props.onCharSelected(item.id);
+                                    focusLI(index);
+                                }
+                            }}>
+                                <img src={item.thumbnail} alt={item.name} style={styleThumbnail}/>
+                                <div className="char__name">{item.name}</div>
+                        </li>
+                    </CSSTransition> 
             )
         });
         
         return (
-            <ul className="char__grid">
-                {items}
-            </ul>
+                <ul className="char__grid">
+                    <TransitionGroup component={null}>
+                        {items}
+                    </TransitionGroup>
+                </ul>
         )
     }
         
@@ -104,8 +105,7 @@ const CharList = (props) => {
                     className="button button__main button__long"
                     disabled={newItemLoading}
                     style={{'display': charEnded ? 'none' : 'block'}}
-                    onClick={() => onRequest(offset)}
-                    >
+                    onClick={() => onRequest(offset)}>
                     <div className="inner">load more</div>
                 </button>
             </div>
