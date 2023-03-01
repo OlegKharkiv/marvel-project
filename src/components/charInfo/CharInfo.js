@@ -6,6 +6,7 @@ import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
+import CharByName from '../CharByName/CharByName';
 
 
 const CharInfo = (props) => {
@@ -36,12 +37,16 @@ const CharInfo = (props) => {
         const spinner = loading ? <Spinner/> : null;
         const content = !(loading || error || !char) ? <View char={char}/> : null;
         return (
+            <>
             <div className="char__info">
                 {skeleton}
                 {errorMessage}
                 {spinner}
                 {content}
             </div>
+            <CharByName/>
+            </>
+            
         )
 }
 
@@ -81,9 +86,6 @@ const View = ({char}) => {
                             )
                         })
                     }
-                    
-                    
-                    
                 </ul>
             </>
     )

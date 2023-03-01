@@ -15,8 +15,7 @@ const CharList = (props) => {
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
-    const [inProp, setInProp] = useState(false);
-
+    
     const {loading, error, getAllCharacters} = useMarvelService();
 
     useEffect(() => {
@@ -41,9 +40,7 @@ const CharList = (props) => {
         setCharEnded(charEnded => ended);
     }
 
-    
     const myLiRef = useRef([]);
-    const nodeRef = useRef(null);
 
     const focusLI = (id) => {
         myLiRef.current.forEach(item => item.classList.remove('char__item_selected'));
