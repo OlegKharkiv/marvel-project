@@ -8,7 +8,6 @@ const useMarvelService = () => {
     const _baseOffset = 210;
 
 
-
     const getAllCharacters = async (offset = _baseOffset) => {
         const res = await request(`${_apiBase}characters?limit=9&offset=${offset}&${_apiKey}`);
         return res.data.results.map(_transformCharacter);
@@ -17,6 +16,11 @@ const useMarvelService = () => {
     const getCharacter = async (id) => {
         const res = await request(`${_apiBase}characters/${id}?${_apiKey}`);
         return _transformCharacter(res.data.results[0]);
+    }
+
+    const getCharacterByNameTR = async (id) => {
+        const res = await request(`${_apiBase}characters/${id}?${_apiKey}`);
+        return _transformCharacterByName(res.data.results[0]);
     }
 
     const getCharacterByName = async (name) => {
@@ -33,12 +37,23 @@ const useMarvelService = () => {
                 homepage: char.urls[0].url,
                 wiki: char.urls[1].url,
                 comics: char.comics.items
+        }
+    }
 
+    const _transformCharacterByName = (char) => {
+        return {
+                id: char.id,
+                name: char.name,
+                description: char.description ? char.description : 'There is no description for this character',
+                thumbnail: char.thumbnail.path + '.' + char.thumbnail.extension,
+                homepage: char.urls[0].url,
+                wiki: char.urls[1].url,
+                comics: char.urls[2].url
         }
     }
 
 
-    return {loading, error, getAllCharacters, getCharacter, getCharacterByName, clearError}
+    return {loading, error, getAllCharacters, getCharacter, getCharacterByNameTR, getCharacterByName, clearError}
 }
 
 export default useMarvelService;
