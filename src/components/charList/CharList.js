@@ -28,16 +28,16 @@ const CharList = (props) => {
             .then(onCharListLoaded)
     }
 
-    const onCharListLoaded = (newCharList) => {
+    const onCharListLoaded = async (newCharList) => {
         let ended = false;
         if (newCharList.length < 9) {
             ended = true;
         }
 
-        setCharList(charList => [...charList, ...newCharList]);
-        setNewItemLoading(newItemLoading => false);
-        setOffset(offset => offset + 9);
-        setCharEnded(charEnded => ended);
+        setCharList([...charList, ...newCharList]);
+        setNewItemLoading(false);
+        setOffset(offset + 9);
+        setCharEnded(ended);
     }
 
     const myLiRef = useRef([]);
@@ -47,7 +47,6 @@ const CharList = (props) => {
         myLiRef.current[id].classList.add('char__item_selected');
         myLiRef.current[id].focus();
     }
-
 
 
     function renderItems(arr) {

@@ -35,7 +35,5 @@ const App = () => {
     
 }
 
-{/* <Route path="/comics" element={<ComicsPage />} />
-<Route path="/comics/:comicId" element={<SingleComicPage />} /> */}
 
 export default App;
