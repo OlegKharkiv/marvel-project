@@ -1,6 +1,7 @@
 
 import { useParams, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
+import { Helmet } from "react-helmet"; 
 
 import useMarvelServiceComics from '../../services/MarvelServiceComics';
 import Spinner from '../spinner/Spinner';
@@ -48,6 +49,13 @@ const View = ({comic}) => {
     return(
         <>
             <div className="single-comic">
+                <Helmet>
+                    <meta
+                        name="description"
+                        content={`${title} comic book`}
+                    />
+                    <title>{title}</title>
+                </Helmet>
                 <img src={thumbnail} alt={title} className="single-comic__img"/>
                 <div className="single-comic__info">
                     <h2 className="single-comic__name">{title}</h2>
